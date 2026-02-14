@@ -1,4 +1,4 @@
-# @rbxts/react-particle
+# react-particle
 
 A performant, flexible particle system for Roblox built with React and roblox-ts.
 
@@ -116,4 +116,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-MIT © [Afrxzo](https://github.com/Afrxzo)
+MIT © [afrxzo](https://github.com/afrxo)
