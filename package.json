@@ -1,0 +1,56 @@
+{
+  "name": "@rbxts/react-particle",
+  "version": "1.0.0",
+  "description": "A performant, flexible React particle system for Roblox built with roblox-ts",
+  "main": "out/init.lua",
+  "scripts": {
+    "build": "rbxtsc",
+    "watch": "rbxtsc --type game -w",
+    "serve": "rojo serve default.project.json",
+    "dev": "concurrently 'pnpm watch' 'pnpm serve'",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "roblox",
+    "roblox-ts",
+    "react",
+    "particles",
+    "particle-system",
+    "ui",
+    "effects",
+    "animation"
+  ],
+  "author": "David Boakye",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Afrxzo/react-particle"
+  },
+  "bugs": {
+    "url": "https://github.com/Afrxzo/react-particle/issues"
+  },
+  "homepage": "https://github.com/Afrxzo/react-particle#readme",
+  "type": "commonjs",
+  "types": "out/index.d.ts",
+  "files": [
+    "out",
+    "!**/*.tsbuildinfo"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@rbxts/compiler-types": "^3.0.0-types.0",
+    "@rbxts/types": "^1.0.896",
+    "@rbxts/ui-labs": "^2.4.2",
+    "concurrently": "*",
+    "roblox-ts": "^3.0.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@rbxts/pretty-react-hooks": "^0.6.4",
+    "@rbxts/react": "^17.3.7-ts.1",
+    "@rbxts/react-roblox": "^17.3.7-ts.1",
+    "@rbxts/services": "^1.6.0"
+  }
+}
