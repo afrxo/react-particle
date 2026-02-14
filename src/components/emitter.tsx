@@ -73,17 +73,15 @@ export const Emitter = forwardRef<EmitterRef, EmitterProps>(
       acceleration = new Vector2(0, 0),
       drag = 0,
       renderParticle,
-      maxParticles = 1000,
+      maxParticles = 500,
     },
     ref,
   ) => {
     const frameRef = useRef<Frame>();
     const attachmentPosition = useContext(AttachmentContext);
 
-    // Single source of truth for all particles
     const [particles, setParticles] = useState<ParticleData[]>([]);
 
-    // Calculate spawn position from attachment or origin as fallback
     const getSpawnPosition = useCallback((): Vector2 => {
       const frame = frameRef.current;
       if (!frame) return Vector2.zero;
@@ -100,7 +98,6 @@ export const Emitter = forwardRef<EmitterRef, EmitterProps>(
       return Vector2.zero;
     }, [attachmentPosition]);
 
-    // Spawn new particles
     const spawn = useCallback(
       (amount: number = 1) => {
         const origin = getSpawnPosition();
@@ -109,10 +106,8 @@ export const Emitter = forwardRef<EmitterRef, EmitterProps>(
           const updated = [...current];
 
           for (let i = 0; i < amount; i++) {
-            // Try to reuse a dead particle slot (object pooling)
             let particle = updated.find((p) => !p.alive);
 
-            // Create new particle if no dead slots available and under limit
             if (!particle && updated.size() < maxParticles) {
               particle = {
                 id: HttpService.GenerateGUID(false),
@@ -127,10 +122,8 @@ export const Emitter = forwardRef<EmitterRef, EmitterProps>(
               updated.push(particle);
             }
 
-            // Can't spawn if at max capacity
             if (!particle) break;
 
-            // Calculate velocity direction with spread
             const baseAngle = math.rad(angle);
             const spreadOffset = math.rad(
               randomInRange(-spread / 2, spread / 2),
@@ -141,7 +134,6 @@ export const Emitter = forwardRef<EmitterRef, EmitterProps>(
               math.sin(finalAngle),
             );
 
-            // Initialize particle
             particle.life = 0;
             particle.lifetime = randomInRange(lifetime[0], lifetime[1]);
             particle.rotation = typeIs(rotation, "table")
@@ -173,7 +165,6 @@ export const Emitter = forwardRef<EmitterRef, EmitterProps>(
 
     useImperativeHandle(ref, () => ({ emit: spawn }), [spawn]);
 
-    // Automatic emission based on rate
     const emitAccumulator = useRef(0);
     useEventListener(RunService.RenderStepped, (dt) => {
       if (rate === 0) return;
@@ -187,7 +178,6 @@ export const Emitter = forwardRef<EmitterRef, EmitterProps>(
       }
     });
 
-    // Update particle physics each frame
     useEventListener(RunService.Heartbeat, (dt) => {
       setParticles((current) => {
         if (current.size() === 0) return current;
@@ -197,27 +187,22 @@ export const Emitter = forwardRef<EmitterRef, EmitterProps>(
         for (const particle of updated) {
           if (!particle.alive) continue;
 
-          // Age the particle
           particle.life += dt;
 
-          // Kill if lifetime exceeded
           if (particle.life >= particle.lifetime) {
             particle.alive = false;
             continue;
           }
 
-          // Apply acceleration
           particle.velocity = particle.velocity.add(
             particle.acceleration.mul(dt),
           );
 
-          // Apply drag
           if (drag > 0) {
             const damping = math.exp(-drag * dt);
             particle.velocity = particle.velocity.mul(damping);
           }
 
-          // Update position and rotation
           particle.position = particle.position.add(particle.velocity.mul(dt));
           particle.rotation += rotSpeed * dt;
         }
